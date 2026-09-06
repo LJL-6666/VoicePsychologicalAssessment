@@ -1,49 +1,63 @@
-<!--
- * @Author: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @Date: 2025-06-30 22:26:02
- * @LastEditors: error: error: git config user.name & please set dead value or install git && error: git config user.email & please set dead value or install git & please set dead value or install git
- * @LastEditTime: 2025-06-30 23:55:34
- * @FilePath: \<PROJECT>\第二阶段数据\code\语音端到端demo-0\语音端到端demo-1-4\README.md
- * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
--->
 # 语音端到端情绪系统
 
-本项目实现了一个端到端的语音情绪识别，包括数据处理和情绪预测以及报告输出等功能。
-输入一个人的请求ID，会索引到该用户的音频文件夹下的所有音频【排除预热标签的音频】，输出一个人的8个情绪得分和3维度量表得分，并生成HTML心理评估报告和json文件。
+端到端的语音情绪识别与心理评估报告生成：输入一个 `recordId`，索引该用户音频目录下的全部音频
+（排除预热标签的题目），输出 8 个情绪得分与 3 维度量表得分，并生成 HTML 心理评估报告与 JSON 结果。
 
-python generate_complete_report.py --json_file "<PROJECT_ROOT>\<PROJECT>\第二阶段数据\code\语音端到端demo-0\语音端到端demo-1-2\dataset\10001.txt"
+---
 
-python generate_complete_report.py --json_file "<PROJECT_ROOT>\<PROJECT>\第二阶段数据\code\语音端到端demo-0\语音端到端demo-1-2\dataset\10002.txt"
+## 关于示例数据（必读）
 
------------------------------
-python api_server.py
-python test_api.py
+`dataset/10001.txt`、`dataset/10002.txt`、`api_data/*.txt` 与 `data_generator.py` 中的样例记录
+**均为合成数据，不对应任何真实个人**：
 
+| 字段 | 说明 |
+|---|---|
+| `recordId` | `10001` / `10002`，虚构编号 |
+| `personInfo` | 出生日期、年龄、测试时间均为虚构值；`工种`（`普通职工`）与 `行业` 是通用取值 |
+| `fileList[].file_address` | 指向 `example.invalid`——保留域名，不可解析，仅用于展示 URL 结构 |
+| 量表得分 | 保留真实的量表结构（PHQ-9 / GAD-7 / GHQ-12 / CPSS / MBI-GS / Mini-IPIP / PSSS / MSQ / PERMA）与分数区间定义，分数本身为示例值 |
 
+跑通完整流程需要自备真实音频与测评数据。**接入真实数据时请注意：**
 
-## 环境依赖
-Anaconda 3
-Python 3.8
-Pytorch 1.13.1
+- 测评结果属健康信息、音频属生物识别信息，在《个人信息保护法》下均为**敏感个人信息**，处理需取得单独同意；
+- 不要把含手机号、精确出生日期、真实 `recordId` 或可解析音频直链的记录提交进版本库；
+- 生成产物（`api_results/`、`temp_data/`）已在 `.gitignore` 中排除，请勿强制添加。
 
+---
+
+## 快速开始
 
 ```bash
-# 创建Anaconda环境
-conda create -n ml python=3.10
+# 为单条记录生成完整报告（情绪分析 + 图表 + HTML 报告）
+python generate_complete_report.py --json_file dataset/10001.txt
 
-# 激活环境
+# 或起 API 服务
+python api_server.py
+python test_api.py
+```
+
+脚本使用相对路径，请在仓库根目录执行，勿改动目录结构。
+
+## 环境依赖
+
+```bash
+conda create -n ml python=3.10
 conda activate ml
 
-# 基本依赖
 conda install pytorch==2.2.1 torchvision==0.17.1 torchaudio==2.2.1 pytorch-cuda=11.8 -c pytorch -c nvidia
-
 python -m pip install mser -U -i https://pypi.tuna.tsinghua.edu.cn/simple
-
-# 安装依赖
 pip install -r requirements.txt
 ```
-## 注意事项
-1. 本项目使用相对路径，确保不要修改目录结构
-2. 预测脚本会自动处理路径问题，即使config.py导入失败也能正常工作
-3. 如果使用Emotion2Vec特征提取方法，请确保安装了funasr库
 
+使用 Emotion2Vec 特征提取方法时，另需安装 `funasr`。
+
+## 注意事项
+
+1. 本项目使用相对路径，确保不要修改目录结构
+2. 预测脚本会自动处理路径问题，即使 `config.py` 导入失败也能正常工作
+3. 报告 HTML 与中间产物写入 `api_results/` 与 `temp_data/`，均不入库
+
+## 许可证
+
+代码以 MIT 发布，见 [`LICENSE`](LICENSE)。
+`models/iic/` 下的 Emotion2Vec 权重与配置来自上游模型，适用其原许可。

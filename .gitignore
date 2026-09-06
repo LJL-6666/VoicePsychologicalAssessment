@@ -1,0 +1,15 @@
+# 生成产物：报告 HTML / JSON、下载的音频、中间文件——均含真实个人数据，不入库
+api_results/
+temp_data/
+*.wav
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+.venv/
+
+# 系统
+.DS_Store
+.idea/
+.vscode/
