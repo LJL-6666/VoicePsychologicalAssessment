@@ -1,0 +1,8 @@
+NOTICE — 许可适用范围
+
+本仓库的 LICENSE（MIT）仅适用于自有代码。
+
+models/iic/ 下的 Emotion2Vec 模型权重与配置来自上游项目，适用其各自的原许可。
+
+dataset/、api_data/ 与 data_generator.py 中的样例记录均为合成数据，不对应任何
+真实个人；接入真实测评数据时的合规要求见 README「关于示例数据」一节。
