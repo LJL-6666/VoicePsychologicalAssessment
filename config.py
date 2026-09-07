@@ -48,7 +48,9 @@ class PathConfig:
         # 向后兼容的路径变量
         self.PROJECT_PATH = self.project_root
         self.DATA_PATH = self.project_root / "data"
-        self.DATA1_PATH = Path("E:/<PROJECT_ROOT>/<PROJECT>/第二阶段数据")
+        # 外部数据根目录：由环境变量 VPA_DATA_ROOT 指定；未设置时回退到仓库内 data/。
+        # （原先此处为开发机上的 Windows 绝对路径，换机即失效，现改为可配置。）
+        self.DATA1_PATH = Path(os.environ.get("VPA_DATA_ROOT", self.project_root / "data"))
         self.DATASET_PATH = self.dataset_dir
         self.FEATURES_PATH = self.features_dir
         self.MODEL_PATH = self.models_dir

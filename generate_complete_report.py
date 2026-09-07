@@ -24,6 +24,16 @@ from datetime import datetime
 # 忽略警告
 warnings.filterwarnings('ignore', category=UserWarning)
 
+def _data_root():
+    """外部数据根目录：环境变量 VPA_DATA_ROOT，未设置时回退到仓库内 data/。"""
+    return os.environ.get("VPA_DATA_ROOT", os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"))
+
+
+def _temp_data_dir():
+    """报告中间产物目录：环境变量 VPA_TEMP_DATA，未设置时回退到仓库内 temp_data/。"""
+    return os.environ.get("VPA_TEMP_DATA", os.path.join(os.path.dirname(os.path.abspath(__file__)), "temp_data"))
+
+
 def create_emotion_spectrum_chart(emotion_scores, user_name):
     """创建情绪谱图"""
     # 指定的情绪顺序（使用中文标签，与JSON文件匹配）
@@ -1386,7 +1396,7 @@ def generate_complete_report_from_temp_data(record_id, **kwargs):
     print(f"开始为记录ID '{record_id}' 生成完整的心理评估报告...")
     
     # 设置temp_data目录路径
-    temp_data_dir = kwargs.get('temp_data_dir', 'E:\\<PROJECT_ROOT>\\<PROJECT>\\第二阶段数据\\code\\语音端到端demo-6\\temp_data')
+    temp_data_dir = kwargs.get('temp_data_dir', _temp_data_dir())
     record_dir = os.path.join(temp_data_dir, record_id)
     
     # 检查记录目录是否存在
@@ -1660,8 +1670,8 @@ def generate_complete_report(user_id, **kwargs):
         print("开始情绪分析...")
         
         # 准备参数
-        data_dir = kwargs.get('data_dir', 'E:\\<PROJECT_ROOT>\\<PROJECT>\\第二阶段数据\\data')
-        user_report_path = kwargs.get('user_report', 'E:\\<PROJECT_ROOT>\\<PROJECT>\\第二阶段数据\\data\\用户综合报告.json')
+        data_dir = kwargs.get('data_dir', _data_root())
+        user_report_path = kwargs.get('user_report', os.path.join(_data_root(), '用户综合报告.json'))
         model_path = kwargs.get('model_path')
         device = kwargs.get('device', 'auto')
         exclude_labels = kwargs.get('exclude_labels')
@@ -1755,15 +1765,15 @@ def main():
     
     # 可选参数
     parser.add_argument('--data_dir', type=str, 
-                       default='E:\\<PROJECT_ROOT>\\<PROJECT>\\第二阶段数据\\data',
+                       default=_data_root(),
                        help='数据目录路径（仅用于user_id模式）')
     
     parser.add_argument('--user_report', type=str, 
-                       default='E:\\<PROJECT_ROOT>\\<PROJECT>\\第二阶段数据\\data\\用户综合报告.json',
+                       default=os.path.join(_data_root(), '用户综合报告.json'),
                        help='用户综合报告JSON文件路径（仅用于user_id模式）')
     
     parser.add_argument('--temp_data_dir', type=str, 
-                       default='E:\\<PROJECT_ROOT>\\<PROJECT>\\第二阶段数据\\code\\语音端到端demo-6\\temp_data',
+                       default=_temp_data_dir(),
                        help='temp_data目录路径（仅用于record_id模式）')
     
     parser.add_argument('--model_path', type=str, 
